@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 
 class UserController extends Controller
@@ -13,8 +14,8 @@ class UserController extends Controller
      */
     public function index()
     {
-        $users = User::all(); // Mengambil semua pengguna
-        return view('user.index', compact('users')); // Mengirimkan variabel ke tampilan
+        $users = User::simplePaginate(5);
+        return view('user.index', compact('users'));
     }
 
     /**
@@ -36,23 +37,19 @@ class UserController extends Controller
             'role' => 'required|string',
         ]);
 
-        // Ambil 3 karakter pertama dari nama dan email
         $name = $request->input('name');
         $email = $request->input('email');
-        
-        // Membuat password
+
         $password = substr($name, 0, 3) . substr($email, 0, 3);
 
-        // Buat pengguna baru
         User::create([
             'name' => $name,
             'email' => $email,
-            'password' =>Hash::make($password), // Hash password sebelum menyimpan
+            'password' =>Hash::make($password),
             'role' => $request->input('role'),
         ]);
 
-        // Redirect atau kembali dengan pesan
-        return redirect()->route('user.index')->with('success', 'User berhasil ditambahkan.');
+        return redirect()->route('user.index')->with('success', 'Berhasil pengguna telah ditambahkan.');
     }
 
     /**
@@ -68,8 +65,8 @@ class UserController extends Controller
      */
     public function edit(string $id)
     {
-        $user = User::findOrFail($id); // Mencari pengguna berdasarkan ID
-        return view('user.edit', compact('user')); // Mengembalikan tampilan edit
+        $user = User::findOrFail($id);
+        return view('user.edit', compact('user'));
           
     }
     
@@ -94,7 +91,7 @@ class UserController extends Controller
             $user->password = Hash::make($request->password);
         }
         $user->save();
-        return redirect()->route('user.index')->with('success', 'User telah di edit');
+        return redirect()->route('user.index')->with('success', 'Berhasil mengedit data pengguna');
     }
 
     /**
@@ -102,11 +99,40 @@ class UserController extends Controller
      */
     public function destroy(string $id)
     {
-        $user = User::findOrFail($id); // Mencari pengguna berdasarkan ID
-        $user->delete(); // Menghapus pengguna
+        $user = User::where('id', $id)->delete();
 
-        // Redirect atau kembali dengan pesan
-        return redirect()->route('user.index')->with('success', 'User berhasil dihapus.');
+        if ($user) {
+            return redirect()->back()->with('success', 'Berhasil menghapus data pengguna!');
+        } else {
+            return redirect()->back()->with('failed', 'Tidak menghapus data pengguna!');
+        }
+    }
+
+    public function login()
+    {
+        return view('login');
+    }
+
+
+    public function loginAuth(Request $request)
+    {
+        $request->validate([
+            'email' => 'required|email:dns',
+            'password' => 'required',
+        ]);
+
+        $user = $request->only(['email', 'password']); // meminta untuk emngambil data email dan password dan di simpan di array 
+        if(Auth::attempt($user)){  // akan memeverifikasi apakah email dan password sesuai, jika iya maka history login akan disimpan kedalam auth
+            return redirect()->route('home.page'); // jika berhasil akan di arahkan ke halaman home
+        }else{
+            return redirect()->back()->with('failed', 'Proses login gagal, silahkan coba kembali dengan data yang benar!');
+        }
+    }
+
+    public function logout()
+    {
+        Auth::logout(); // semua data yg ada di auth setelah di logout akan menghapus history nya
+        return redirect()->route('login')->with('logout', 'Anda telah logout !');
     }
 }
 

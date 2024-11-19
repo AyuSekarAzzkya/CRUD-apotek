@@ -1,6 +1,5 @@
 @extends('template.app')
 @section('content')
-
 <div class="container mt-5">
     <form action="{{ route('user.store') }}" method="POST" class="card p-5">
         @csrf
@@ -34,5 +33,4 @@
         <a href="{{ route('user.index') }}" class="btn btn-danger mt-3">Kembali</a>
     </form>
 </div>
-
 @endsection

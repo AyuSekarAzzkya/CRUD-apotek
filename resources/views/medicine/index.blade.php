@@ -22,25 +22,24 @@
         </thead>
 
         <tbody>
-            @php $no = 1; @endphp
-            @foreach ($medicines as $item)
-                <tr>
-                    <td>{{ $no++ }}</td>
-                    <td>{{ $item ['name'] }}</td>
-                    <td>{{ $item ['type'] }}</td>
-                    <td>{{ $item ['price'] }}</td>
-                    <td>{{ $item ['stock']}}</td>
-                    <td class="d-flex justify-content-center">
-                        <a href="{{ route('medicine.edit', $item['id']) }}" class="btn btn-primary me-3">Edit</a>
-                        <form action="{{ route('medicine.delete', $item['id']) }}" method="POST">
-                            @csrf
-                            @method('DELETE')
-                            <button type="submit" class="btn btn-danger">Hapus</button>
-                        </form>
-                    </td>
-                </tr>
-            @endforeach
+                @php $no = 1; @endphp
+                @foreach ($medicines as $item)
+                    <tr>
+                        <td>{{ $no++ }}</td>
+                        <td>{{ $item ['name'] }}</td>
+                        <td>{{ $item ['type'] }}</td>
+                        <td>{{ $item ['price'] }}</td>
+                        <td>{{ $item ['stock']}}</td>
+                        <td class="d-flex justify-content-center">
+                            <a href="{{ route('medicine.edit', $item['id']) }}" class="btn btn-primary me-3">Edit</a>
+                            <form action="{{ route('medicine.delete', $item['id']) }}" method="POST">
+                                @csrf
+                                @method('DELETE')
+                                <button type="submit" class="btn btn-danger">Hapus</button>
+                            </form>
+                        </td>
+                    </tr>
+                @endforeach
         </tbody>
     </table>
-
 @endsection 

@@ -12,7 +12,7 @@ class LandingPageController extends Controller
     {
         //proses pemanggilan blade
         // file yg ada di dalam folder NAMAFOLDER   .namafile
-        return view('landing-page');
+        return view('home');
     }
 
     // Membuat halaman tambah data C dalam CRUD
